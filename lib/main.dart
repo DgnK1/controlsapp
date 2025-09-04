@@ -99,13 +99,15 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 26),*/
               SizedBox(
                 width: double.infinity,
-                height: 49,
+                height: 48,
                 child: ElevatedButton(
                   onPressed: () {
                     // pseudo login action
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EmptyTabPage()),
+                      MaterialPageRoute(
+                        builder: (context) => ControlsTabPage(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -153,7 +155,9 @@ class _LoginPageState extends State<LoginPage> {
                     //pseudo Google login
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EmptyTabPage()),
+                      MaterialPageRoute(
+                        builder: (context) => ControlsTabPage(),
+                      ),
                     );
                   },
                   icon: Icon(
@@ -236,15 +240,22 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class EmptyTabPage extends StatelessWidget {
-  const EmptyTabPage({super.key});
+class ControlsTabPage extends StatefulWidget {
+  const ControlsTabPage({super.key});
+
+  @override
+  State<ControlsTabPage> createState() => _ControlsTabPageState();
+}
+
+class _ControlsTabPageState extends State<ControlsTabPage> {
+  bool isDark = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.close),
+          icon: const Icon(Icons.close),
           onPressed: () {
             Navigator.pop(context); // Navigate back to the login page
           },
@@ -254,82 +265,61 @@ class EmptyTabPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: SearchBarApp(), // Use the SearchBarApp widget here
-      ),
-    );
-  }
-}
-
-// Move the SearchBarApp class outside of EmptyTabPage
-class SearchBarApp extends StatefulWidget {
-  const SearchBarApp({super.key});
-
-  @override
-  State<SearchBarApp> createState() => _SearchBarAppState();
-}
-
-class _SearchBarAppState extends State<SearchBarApp> {
-  bool isDark = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData themeData = ThemeData(
-      brightness: isDark ? Brightness.dark : Brightness.light,
-    );
-
-    return MaterialApp(
-      theme: themeData,
-      home: Scaffold(
-        appBar: AppBar(),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SearchAnchor(
-            builder: (BuildContext context, SearchController controller) {
-              return SearchBar(
-                controller: controller,
-                padding: const WidgetStatePropertyAll<EdgeInsets>(
-                  EdgeInsets.symmetric(horizontal: 16.0),
-                ),
-                onTap: () {
-                  controller.openView();
-                },
-                onChanged: (_) {
-                  controller.openView();
-                },
-                leading: const Icon(Icons.search),
-                trailing: <Widget>[
-                  Tooltip(
-                    message: 'Change brightness mode',
-                    child: IconButton(
-                      isSelected: isDark,
-                      onPressed: () {
-                        setState(() {
-                          isDark = !isDark;
-                        });
-                      },
-                      icon: const Icon(Icons.wb_sunny_outlined),
-                      selectedIcon: const Icon(Icons.brightness_2_outlined),
-                    ),
+        child: SearchAnchor(
+          builder: (BuildContext context, SearchController controller) {
+            return SearchBar(
+              controller: controller,
+              padding: const WidgetStatePropertyAll<EdgeInsets>(
+                EdgeInsets.symmetric(horizontal: 16.0),
+              ),
+              onTap: () {
+                controller.openView();
+              },
+              onChanged: (_) {
+                controller.openView();
+              },
+              leading: const Icon(Icons.search),
+              trailing: <Widget>[
+                Tooltip(
+                  message: 'Change brightness mode',
+                  child: IconButton(
+                    isSelected: isDark,
+                    onPressed: () {
+                      setState(() {
+                        isDark = !isDark;
+                      });
+                    },
+                    icon: const Icon(Icons.wb_sunny_outlined),
+                    selectedIcon: const Icon(Icons.brightness_2_outlined),
                   ),
-                ],
-              );
-            },
-            suggestionsBuilder:
-                (BuildContext context, SearchController controller) {
-                  return List<ListTile>.generate(5, (int index) {
-                    final String item = 'item $index';
-                    return ListTile(
-                      title: Text(item),
-                      onTap: () {
-                        setState(() {
-                          controller.closeView(item);
-                        });
-                      },
-                    );
-                  });
-                },
-          ),
+                ),
+              ],
+            );
+          },
+          suggestionsBuilder:
+              (BuildContext context, SearchController controller) {
+                return List<ListTile>.generate(5, (int index) {
+                  final String item = 'item $index';
+                  return ListTile(
+                    title: Text(item),
+                    onTap: () {
+                      setState(() {
+                        controller.closeView(item);
+                      });
+                    },
+                  );
+                });
+              },
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: "Settings",
+          ),
+        ],
       ),
     );
   }
