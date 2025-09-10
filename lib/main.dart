@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
               Text(
                 'Autonomous UAV',
                 style: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Roboto',
                   fontWeight: FontWeight.bold,
                   fontSize: 32,
                   color: Color(0xFF1C1C1C),
@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
               Text(
                 'Create an account',
                 style: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Roboto',
                   fontWeight: FontWeight.bold,
                   fontSize: 26,
                   color: Color(0xFF1C1C1C),
@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
               Text(
                 'Enter your email to sign up for this app',
                 style: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Roboto',
                   fontWeight: FontWeight.normal,
                   fontSize: 18,
                   color: Color(0xFF1C1C1C),
@@ -105,7 +105,9 @@ class _LoginPageState extends State<LoginPage> {
                     // pseudo login action
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EmptyTabPage()),
+                      MaterialPageRoute(
+                        builder: (context) => ControlsTabPage(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -125,7 +127,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               SizedBox(height: 26),
-
               Row(
                 children: [
                   Expanded(child: Divider(color: Colors.grey, thickness: 1)),
@@ -134,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text(
                       'or',
                       style: TextStyle(
-                        fontFamily: 'Poppins',
+                        fontFamily: 'Roboto',
                         fontSize: 14,
                         color: Color(0xFF87879D),
                       ),
@@ -153,7 +154,9 @@ class _LoginPageState extends State<LoginPage> {
                     //pseudo Google login
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EmptyTabPage()),
+                      MaterialPageRoute(
+                        builder: (context) => ControlsTabPage(),
+                      ),
                     );
                   },
                   icon: Icon(
@@ -222,7 +225,7 @@ class _LoginPageState extends State<LoginPage> {
                   "Don't have an account? Sign Up",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Roboto',
                     fontSize: 14,
                     color: Color(0xFF87879D),
                   ),
@@ -236,15 +239,29 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class EmptyTabPage extends StatelessWidget {
-  const EmptyTabPage({super.key});
+class ControlsTabPage extends StatefulWidget {
+  const ControlsTabPage({super.key});
+
+  @override
+  State<ControlsTabPage> createState() => _ControlsTabPageState();
+}
+
+// Update the ControlsTabPage class to include the ActivityPage
+class _ControlsTabPageState extends State<ControlsTabPage> {
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = [
+    const SearchBarApp(), // Placeholder for Home Page
+    const ActivityPage(), // Add the new ActivityPage here
+    const Center(child: Text('Settings Page')), // Placeholder for Settings Page
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.close),
+          icon: const Icon(Icons.close),
           onPressed: () {
             Navigator.pop(context); // Navigate back to the login page
           },
@@ -252,15 +269,32 @@ class EmptyTabPage extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SearchBarApp(), // Use the SearchBarApp widget here
+      body: _pages[_currentIndex], // Display the selected page
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _currentIndex,
+        onTap: (int index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'HOME'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.show_chart_rounded),
+            label: 'ACTIVITY',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'SETTINGS',
+          ),
+        ],
       ),
     );
   }
 }
 
-// Move the SearchBarApp class outside of EmptyTabPage
+// Move the SearchBarApp class outside of ControlsTabPage
 class SearchBarApp extends StatefulWidget {
   const SearchBarApp({super.key});
 
@@ -283,52 +317,177 @@ class _SearchBarAppState extends State<SearchBarApp> {
         appBar: AppBar(),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: SearchAnchor(
-            builder: (BuildContext context, SearchController controller) {
-              return SearchBar(
-                controller: controller,
-                padding: const WidgetStatePropertyAll<EdgeInsets>(
-                  EdgeInsets.symmetric(horizontal: 16.0),
-                ),
-                onTap: () {
-                  controller.openView();
-                },
-                onChanged: (_) {
-                  controller.openView();
-                },
-                leading: const Icon(Icons.search),
-                trailing: <Widget>[
-                  Tooltip(
-                    message: 'Change brightness mode',
-                    child: IconButton(
-                      isSelected: isDark,
-                      onPressed: () {
-                        setState(() {
-                          isDark = !isDark;
-                        });
-                      },
-                      icon: const Icon(Icons.wb_sunny_outlined),
-                      selectedIcon: const Icon(Icons.brightness_2_outlined),
+          child: Column(
+            children: [
+              SearchAnchor(
+                builder: (BuildContext context, SearchController controller) {
+                  return SearchBar(
+                    controller: controller,
+                    padding: const WidgetStatePropertyAll<EdgeInsets>(
+                      EdgeInsets.symmetric(horizontal: 16.0),
                     ),
-                  ),
-                ],
-              );
-            },
-            suggestionsBuilder:
-                (BuildContext context, SearchController controller) {
-                  return List<ListTile>.generate(5, (int index) {
-                    final String item = 'item $index';
-                    return ListTile(
-                      title: Text(item),
-                      onTap: () {
-                        setState(() {
-                          controller.closeView(item);
-                        });
-                      },
-                    );
-                  });
+                    onTap: () {
+                      controller.openView();
+                    },
+                    onChanged: (_) {
+                      controller.openView();
+                    },
+                    leading: const Icon(Icons.search),
+                    trailing: <Widget>[
+                      Tooltip(
+                        message: 'Change brightness mode',
+                        child: IconButton(
+                          isSelected: isDark,
+                          onPressed: () {
+                            setState(() {
+                              isDark = !isDark;
+                            });
+                          },
+                          icon: const Icon(Icons.wb_sunny_outlined),
+                          selectedIcon: const Icon(Icons.brightness_2_outlined),
+                        ),
+                      ),
+                    ],
+                  );
                 },
+                suggestionsBuilder:
+                    (BuildContext context, SearchController controller) {
+                      return List<ListTile>.generate(5, (int index) {
+                        final String item = 'item $index';
+                        return ListTile(
+                          title: Text(item),
+                          onTap: () {
+                            setState(() {
+                              // Add your code here
+                            });
+                          },
+                        );
+                      });
+                    },
+              ),
+              SizedBox(
+                height: 300,
+              ), // Add some space between the search bar and the status text
+              Text(
+                'Status',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.water_drop,
+                            size: 40,
+                            color: Color.fromARGB(255, 41, 41, 49),
+                          ),
+                          Text(
+                            '60%',
+                            style: TextStyle(
+                              fontFamily: 'Roboto',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              color: Color(0xFF1C1C1C),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 48),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.thermostat,
+                            size: 40,
+                            color: Color.fromARGB(255, 255, 0, 0),
+                          ),
+                          Text(
+                            '25°C',
+                            style: TextStyle(
+                              fontFamily: 'Roboto',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              color: Color(0xFF1C1C1C),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Spacer(), // Take up the remaining space
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.battery_6_bar, size: 40),
+                          Text(
+                            '85%',
+                            style: TextStyle(
+                              fontFamily: 'Roboto',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              color: Color(0xFF1C1C1C),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 48),
+                ],
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // pseudo login action
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ControlsTabPage()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 0, 0, 0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  minimumSize: Size(0, 0),
+                  padding: EdgeInsets.symmetric(horizontal: 48, vertical: 12),
+                ),
+                child: Text(
+                  'START',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              SizedBox(height: 26),
+            ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class ActivityPage extends StatelessWidget {
+  const ActivityPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Activity'),
+        backgroundColor: Colors.blue,
+      ),
+      body: const Center(
+        child: Text(
+          'Activity Page',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
     );
